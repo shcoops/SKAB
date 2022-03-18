@@ -83,25 +83,25 @@ def evaluating_change_point(true, prediction, metric='nab', numenta_time=None):
             is change point, and 0 in other case. 
         table_of_coef: pandas array (3x4) of float values
             Table of coefficients for NAB score function
-            indeces: 'Standart','LowFP','LowFN'
+            indeces: 'Standard','LowFP','LowFN'
             columns:'A_tp','A_fp','A_tn','A_fn'
 
 
         Returns
         -------
         Scores: numpy array, shape of 3, float
-            Score for 'Standart','LowFP','LowFN' profile 
+            Score for 'Standard','LowFP','LowFN' profile
         Scores_null: numpy array, shape 3, float
-            Null score for 'Standart','LowFP','LowFN' profile             
+            Null score for 'Standard','LowFP','LowFN' profile
         Scores_perfect: numpy array, shape 3, float
-            Perfect Score for 'Standart','LowFP','LowFN' profile  
+            Perfect Score for 'Standard','LowFP','LowFN' profile
         """
         def single_evaluate_nab(detecting_boundaries, prediction, table_of_coef=None, name_of_dataset=None):
             if table_of_coef is None:
                 table_of_coef = pd.DataFrame([[1.0,-0.11,1.0,-1.0],
                                      [1.0,-0.22,1.0,-1.0],
                                       [1.0,-0.11,1.0,-2.0]])
-                table_of_coef.index = ['Standart','LowFP','LowFN']
+                table_of_coef.index = ['Standard','LowFP','LowFN']
                 table_of_coef.index.name = "Metric"
                 table_of_coef.columns = ['A_tp','A_fp','A_tn','A_fn']
 
@@ -109,7 +109,7 @@ def evaluating_change_point(true, prediction, metric='nab', numenta_time=None):
             prediction = prediction.copy()
 
             Scores, Scores_perfect, Scores_null=[], [], []
-            for profile in ['Standart', 'LowFP', 'LowFN']:       
+            for profile in ['Standard', 'LowFP', 'LowFN']:
                 A_tp = table_of_coef['A_tp'][profile]
                 A_fp = table_of_coef['A_fp'][profile]
                 A_fn = table_of_coef['A_fn'][profile]
@@ -162,7 +162,7 @@ def evaluating_change_point(true, prediction, metric='nab', numenta_time=None):
                 matrix = matrix + matrix_      
                 
         results = {}
-        desc = ['Standart', 'LowFP', 'LowFN'] 
+        desc = ['Standard', 'LowFP', 'LowFN']
         for t, profile_name in enumerate(desc):
             results[profile_name] = round(100*(matrix[0,t]-matrix[1,t])/(matrix[2,t]-matrix[1,t]), 2)
             print(profile_name,' - ', results[profile_name])
@@ -180,7 +180,8 @@ def evaluating_change_point(true, prediction, metric='nab', numenta_time=None):
     if not metric=='binary':
         def single_detecting_boundaries(true, numenta_time, true_items):
             detecting_boundaries=[]
-            td = pd.Timedelta(numenta_time) if numenta_time is not None else pd.Timedelta((true.index[-1]-true.index[0])/len(true_items))  
+            # td = pd.Timedelta(numenta_time) if numenta_time is not None else pd.Timedelta((true.index[-1]-true.index[0])/len(true_items))
+            td = pd.Timedelta(30, 's')
             for val in true_items:
                 detecting_boundaries.append([val, val + td])
             return detecting_boundaries
